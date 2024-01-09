@@ -31,7 +31,7 @@
 
 #include "base_data_package.h"
 #include "execution_policy.h"
-#include "execution_queue.hpp"
+#include "execution_queue.h"
 #include "sph_data_containers.h"
 
 /** this is a reformulation of tbb parallel_sort for particle data */

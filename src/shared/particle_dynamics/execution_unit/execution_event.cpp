@@ -1,5 +1,5 @@
 #include "execution_event.h"
-#include "execution_queue.hpp"
+#include "execution_queue.h"
 
 namespace SPH::execution
 {

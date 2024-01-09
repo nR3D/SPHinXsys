@@ -31,7 +31,7 @@
 
 #include "base_data_package.h"
 #include "execution_policy.h"
-#include "execution_unit/execution_queue.hpp"
+#include "execution_unit/execution_queue.h"
 #include "sph_data_containers.h"
 
 namespace SPH

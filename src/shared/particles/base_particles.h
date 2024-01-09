@@ -34,11 +34,11 @@
 #include "base_data_package.h"
 #include "base_material.h"
 #include "base_variable.h"
+#include "execution_policy.h"
+#include "execution_queue.h"
 #include "particle_sorting.h"
 #include "sph_data_containers.h"
 #include "xml_engine.h"
-#include "execution_queue.hpp"
-#include "execution_policy.h"
 
 #include <fstream>
 
