@@ -71,18 +71,14 @@ jobs:
           | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt -y update
           sudo apt -y install intel-hpckit
-          source /opt/intel/oneapi/setvars.sh
 
       - name: Generate buildsystem using float (No test)
         run: |
-          find /opt/intel/oneapi/compiler/ -name icpx
           source /opt/intel/oneapi/setvars.sh
           cmake -G Ninja \
             -D CMAKE_BUILD_TYPE=Release \
             -D SPHINXSYS_USE_FLOAT=ON \
             -D CMAKE_TOOLCHAIN_FILE="${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -D SPHINXSYS_CI=ON \
             -D CMAKE_CXX_COMPILER=icpx \
             -D SPHINXSYS_USE_SYCL=ON \
             -D SPHINXSYS_SYCL_TARGETS=spir64 \
@@ -90,7 +86,11 @@ jobs:
             -B ${{github.workspace}}/build
 
       - name: Build using float
-        run: cmake --build build --config Release --verbose
+        run: |
+          source /opt/intel/oneapi/setvars.sh
+          cmake --build build --config Release --verbose
 
       - name: Run dambreak 2d
-        run : ${{github.workspace}}/build/tests/2d_examples/test_2d_dambreak_sycl/bin/test_2d_dambreak_sycl
+        run : |
+          source /opt/intel/oneapi/setvars.sh
+          ${{github.workspace}}/build/tests/2d_examples/test_2d_dambreak_sycl/bin/test_2d_dambreak_sycl
