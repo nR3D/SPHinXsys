@@ -70,14 +70,11 @@ jobs:
           echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
           | sudo tee /etc/apt/sources.list.d/oneAPI.list
           sudo apt -y update
-          sudo apt -y install intel-basekit
-          # or intel-hpckit for Intel HPC Toolkit
+          sudo apt -y install intel-hpckit
           source /opt/intel/oneapi/setvars.sh
 
       - name: Generate buildsystem using float (No test)
         run: |
-          ls /opt/intel/oneapi/compiler/latest/linux/bin
-          source /opt/intel/oneapi/setvars.sh
           cmake -G Ninja \
             -D CMAKE_BUILD_TYPE=Release \
             -D SPHINXSYS_USE_FLOAT=ON \
