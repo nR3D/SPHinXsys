@@ -4,9 +4,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, sycl-ci ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, sycl-ci ]
+    branches: [ master ]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -173,84 +173,6 @@ jobs:
         run: |
           cd build 
           ctest --rerun-failed --output-on-failure
-
-  ###############################################################################
-  Linux-SYCL-float:
-    runs-on: ubuntu-22.04
-    env:
-      VCPKG_DEFAULT_TRIPLET: x64-linux
-
-    steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      - name: Install system dependencies
-        run: |
-          sudo apt update 
-          sudo apt install -y \
-            apt-utils \
-            build-essential \
-            curl zip unzip tar `# when starting fresh on a WSL image for bootstrapping vcpkg`\
-            pkg-config `# for installing libraries with vcpkg`\
-            git \
-            cmake \
-            ninja-build
-
-      - uses: hendrikmuhs/ccache-action@v1.2
-        with:
-          key: ${{ github.job }}
-
-      - uses: friendlyanon/setup-vcpkg@v1 # Setup vcpkg into ${{github.workspace}}
-        with:
-          committish: ${{ env.VCPKG_VERSION }}
-          cache-version: ${{env.VCPKG_VERSION}}
-
-      - name: Install dependencies
-        run: |
-          ${{github.workspace}}/vcpkg/vcpkg install --clean-after-build openblas[dynamic-arch] --allow-unsupported # last argument to remove after regression introduced by microsoft/vcpkg#30192 is addressed
-          # Simbody depends on (open)blas implementation, which -march=native by default, conflicting with cache restore, hence dynamic-arch feature
-          # Above problem might also be resolved by adding the hash of architecture in the cache key, esp. if more package do the same
-          ${{github.workspace}}/vcpkg/vcpkg install --clean-after-build \
-            eigen3 \
-            tbb \
-            boost-program-options \
-            boost-geometry \
-            simbody \
-            gtest \
-            xsimd \
-            pybind11
-
-      - name: Install oneAPI
-        shell: bash
-        run: |
-          wget -O- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
-          | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
-          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
-          | sudo tee /etc/apt/sources.list.d/oneAPI.list
-          sudo apt update
-          sudo apt install intel-basekit
-          # or intel-hpckit for Intel HPC Toolkit
-          source /opt/intel/oneapi/setvars.sh
-
-      - name: Generate buildsystem using float (No test)
-        run: |
-          cmake -G Ninja \
-            -D CMAKE_BUILD_TYPE=Release \
-            -D SPHINXSYS_USE_FLOAT=ON \
-            -D CMAKE_TOOLCHAIN_FILE="${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake" \
-            -D CMAKE_C_COMPILER_LAUNCHER=ccache -D CMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -D SPHINXSYS_CI=ON \
-            -D CMAKE_CXX_COMPILER=/opt/intel/oneapi/compiler/latest/linux/bin/icpx \
-            -D SPHINXSYS_USE_SYCL=ON \
-            -D SPHINXSYS_SYCL_TARGETS=spir64 \
-            -S ${{github.workspace}} \
-            -B ${{github.workspace}}/build
-
-      - name: Build using float
-        run: cmake --build build --config Release --verbose
-
-      - name: Run dambreak 2d
-        run : build/tests/2d_examples/test_2d_dambreak_sycl/bin/test_2d_dambreak_sycl
 
   ###############################################################################
 
