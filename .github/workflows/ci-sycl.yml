@@ -75,6 +75,8 @@ jobs:
 
       - name: Generate buildsystem using float (No test)
         run: |
+          find /opt/intel/oneapi/compiler/ -name icpx
+          source /opt/intel/oneapi/setvars.sh
           cmake -G Ninja \
             -D CMAKE_BUILD_TYPE=Release \
             -D SPHINXSYS_USE_FLOAT=ON \
