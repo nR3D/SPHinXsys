@@ -248,6 +248,9 @@ jobs:
       - name: Build using float
         run: cmake --build build --config Release --verbose
 
+      - name: Run dambreak 2d
+        run : build/tests/2d_examples/test_2d_dambreak_sycl/bin/test_2d_dambreak_sycl
+
   ###############################################################################
 
   Windows:
