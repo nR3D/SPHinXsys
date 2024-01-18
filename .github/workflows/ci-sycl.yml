@@ -76,6 +76,8 @@ jobs:
 
       - name: Generate buildsystem using float (No test)
         run: |
+          ls /opt/intel/oneapi/compiler/latest/linux/bin
+          source /opt/intel/oneapi/setvars.sh
           cmake -G Ninja \
             -D CMAKE_BUILD_TYPE=Release \
             -D SPHINXSYS_USE_FLOAT=ON \
